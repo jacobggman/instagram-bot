@@ -8,122 +8,134 @@ from urllib.request import urlretrieve
 import cv2
 import datetime
 
-passwords = [ "", ""]
-users = ["" ,""]
-
-#nexadesor@vmailpro.net
-passwords.reverse()
-users.reverse()
-
-scrollTimes = 2
+CHROMEDRIVER_PATH = r"C:\Users\User\Desktop\Python\SeleniumScripts\chromedriver.exe"
+scrollTimes = 1
 time_betwin_act = 4
-breackTime = (60*10, 60*20) # betwing two secends
-breackCgance = 0.01 #float prsent
-everyTimeUpload = 60 * 30 #secends
-speed = 1.0 #lower faster
+breackTime = (60*10, 60*20)  # betwing two secends
+breackCgance = 0.01  # float prsent
+everyTimeUpload = 60 * 30  # secends
+speed = 1.0  # lower faster
 likesPerH = 30
-uploadPerH = 1
-
-accountsList = []
-fullInArrow = 0
+upload_per_h = 1
 
 
-class account:
+def read_users_data():
+    """
+    read user passwords and names    
+    """
+    f = open("passwords.txt", "r")
+    lines = f.readlines()
+    lines = list(map(lambda x: x.replace("\n", ""), lines))
+    for user_name, password in zip(lines[::2], lines[1::2]):
+        yield Account(user_name, password)
+
+
+class Account:
     def __init__(self, user, password):
         self.likes = 0
-        self.startTime = time.time()
+        self.start_time = time.time()
         self.upload = 0
         self.user = user
         self.password = password
 
-    def PassHour(self):
-        if (time.time() - self.startTime > 60*60):
+    def pass_hour(self):
+        """
+        if pass hour and can reset the timers
+        """
+        if time.time() - self.start_time > 60*60:
             self.likes = 0
             self.upload = 0
-            self.startTime = time.time()
+            self.start_time = time.time()
 
 
-
-useHashtag = False
-savedImage = False
-hashList = None
-
-mobile_emulation = {
-    "userAgent": "Mozilla/5.0 (Linux; Android 8.1.0; CUBOT_POWER) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.89 Mobile Safari/537.36" }
-
-chrome_options = Options()
-
-chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
-
-driver = webdriver.Chrome('C:/Users/User/Desktop/chromedriver/chromedriver.exe', chrome_options = chrome_options)
-
-def myPrint(txt):
-    print(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + " : "  + txt)
+def log_print(txt):
+    """
+    print with time
+    """
+    print(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + " : " + txt)
 
 
-def getHashtags(hashtag, one=False):
+def get_hashtags(hashtag, one=False):
+    """
+    get random hashtags
+    """
     if not one:
 
-        returnString = []
-
-
-        ranadomHashtagList = hashtag
+        return_string = []
+        ranadom_hashtag_list = hashtag
 
         if hashtag:
-            returnString += (hashtag)
-            while ranadomHashtagList == hashtag:
-                ranadomHashtagList = random.choice(hashtags.allHashtags[2:])
+            return_string += hashtag
+            while ranadom_hashtag_list == hashtag:
+                ranadom_hashtag_list = random.choice(hashtags.all_hashtags[2:])
 
-        returnString += (hashtags.follow)
-        returnString += (hashtags.general)
+        return_string += hashtags.follow
+        return_string += hashtags.general
         if hashtag:
-            returnString += (ranadomHashtagList)
+            return_string += ranadom_hashtag_list
 
-        random.shuffle(returnString)
-        return " ".join(returnString[:28])
+        random.shuffle(return_string)
+        return " ".join(return_string[:28])
     else:
-        return random.choice(random.choice(hashtags.allHashtags[2:]))
+        return random.choice(random.choice(hashtags.all_hashtags[2:]))
+
 
 def detect_faces():
-    image  = cv2.imread('C:/Users/User/TAR.png')
+    """
+    check in downloaded image have a face    
+    """
+    image = cv2.imread('C:/Users/User/TAR.png')
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    faceCascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-    faces = faceCascade.detectMultiScale(
+    face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+    faces = face_cascade.detectMultiScale(
         gray,
         scaleFactor=1.05,
         minNeighbors=6,
         minSize=(30, 30)
         )
 
-    myPrint("Found {0} Faces!".format(len(faces)))
+    log_print("Found {0} Faces!".format(len(faces)))
     return len(faces)
 
-def enterText(text, name):
-    user_name_elem = driver.find_element_by_xpath("//input[@name='"+ name +"']")
+
+def enter_text(text, name, driver):
+    """
+    enter text to input    
+    """
+    user_name_elem = driver.find_element_by_xpath("//input[@name='" + name + "']")
     user_name_elem.clear()
     user_name_elem.send_keys(text)
 
-def click(name):
+
+def click(name, driver):
+    """
+    click on button
+    """
     user_name_elem = driver.find_element_by_xpath("//button[@" + name + "']")
     user_name_elem.click()
 
-def nameTE(name):
+
+def name_te(name):
     return "//button[@" + name + "']"
+
 
 def sl():
     time.sleep(time_betwin_act * speed)
 
-def saveImage(imageXpath):
+
+def save_image(image_xpath, driver):
     global savedImage
     if not savedImage:
-        urlretrieve(driver.find_element_by_xpath(imageXpath).get_attribute("src"), 'C:/Users/User/TAR.png')
+        urlretrieve(driver.find_element_by_xpath(image_xpath).get_attribute("src"), 'C:/Users/User/TAR.png')
         savedImage = True if detect_faces() == 0 else False
 
-def randomChance(enterFloat):
-    randomNum = random.uniform(0.0,1.0)
-    return True if randomNum <= enterFloat else False
 
-def logout():
+def random_chance(enter_float):
+    random_num = random.uniform(0.0, 1.0)
+    return True if random_num <= enter_float else False
+
+
+def logout(driver):
     driver.get("https://www.instagram.com/accounts/logout/")
     time.sleep(2 * speed)
     try:
@@ -135,7 +147,8 @@ def logout():
         pass
     time.sleep(3 * speed)
 
-def search(hashtag, index):
+
+def search(hashtag, index, accounts_list, driver):
     driver.get("https://www.instagram.com/explore/tags/" + hashtag.replace("#", "") + "/")
     time.sleep(random.uniform(1.5, 3) * speed)
 
@@ -157,83 +170,89 @@ def search(hashtag, index):
             continue
 
     # Liking photos
-    tempCounting = 0
+    temp_counting = 0
     unique_photos = len(pic_hrefs)
     for pic_href in pic_hrefs:
         driver.get(pic_href)
 
-        if (randomChance(breackCgance)):
-            myPrint("start Sleeping")
+        if (random_chance(breackCgance)):
+            log_print("start Sleeping")
             time.sleep(random.randrange(breackTime[0], breackTime[1]))
-            myPrint("finish Sleeping")
+            log_print("finish Sleeping")
 
         time.sleep(random.uniform(1.5, 3) * speed)
         try:
-            if accountsList[index].likes >= likesPerH:
+            if accounts_list[index].likes >= likesPerH:
                 return -1
-            if tempCounting > likesPerH / 2:
+            if temp_counting > likesPerH / 2:
                 return
+
+            ''
 
             time.sleep(random.uniform(1.5, 3) * speed)
             driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/article/header/div[2]/div[1]/div[2]/button').click()
             time.sleep(random.uniform(0.5, 2) * speed)
 
-            #if blocked
+            # if blocked
             try:
                 driver.find_element_by_xpath("/html/body/div[3]/div/div/div[2]/button[1]").click()
-                myPrint("account blocked")
+                log_print("account blocked")
                 time.sleep(random.uniform(0.5, 2) * speed)
-                accountsList[index].likes = likesPerH
-                accountsList[index].upload = uploadPerH
+                accounts_list[index].likes = likesPerH
+                accounts_list[index].upload = upload_per_h
                 return -1
             except:
                 pass
 
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(random.uniform(0.5, 2) * speed)
-            driver.find_element_by_xpath('//span[@aria-label="Like"]').click()
+            driver.find_element_by_xpath('//*[@id="react-root"]/section/main/div/div/article/div[2]/section[1]/span[1]/button').click()
             time.sleep(random.uniform(0.5, 2) * speed)
 
-            saveImage('//*[@id="react-root"]/section/main/div/div/article/div[1]/div/div/div[1]/img')
+            save_image('//*[@id="react-root"]/section/main/div/div/article/div[1]/div/div/div[1]/img', driver)
             time.sleep(random.uniform(0.5, 2) * speed)
 
-            accountsList[index].likes += 1
-            tempCounting += 1
+            accounts_list[index].likes += 1
+            temp_counting += 1
 
-            #for second in reversed(range(0, random.randint(18, 28))):
-            #    print("#" + hashtag + ': unique photos left: ' + str(unique_photos)
-             #                   + " | Sleeping " + str(second))
-            #    time.sleep(1)
-        except Exception as e:
+        except:
             time.sleep(random.uniform(2, 3) * speed)
         unique_photos -= 1
 
 
-def login(user, password):
+def login(user, password, driver):
+    """
+    try to login
+    """
     driver.get('https://www.instagram.com/accounts/login/')
     time.sleep(2 * speed)
 
-    enterText(user, "username")
-    enterText(password, "password")
-    click("type='submit")
+    enter_text(user, "username", driver)
+    enter_text(password, "password", driver)
+    click("type='submit", driver)
 
-    closePop()
+    close_pop(driver)
 
-def closePop():
+
+def close_pop(driver):
+    """
+    try to close pop
+    """
     time.sleep(3 * speed)
 
     try:
-        driver.find_element_by_xpath(nameTE("class='aOOlW   HoLwm ")).click()
+        driver.find_element_by_xpath(name_te("class='aOOlW   HoLwm ")).click()
     except:
         pass
 
     time.sleep(2 * speed)
     try:
-        driver.find_element_by_xpath(nameTE("class='aOOlW   HoLwm ")).click()
+        driver.find_element_by_xpath(name_te("class='aOOlW   HoLwm ")).click()
     except:
         pass
 
-def uploadImage():
+
+def upload_image(driver):
     global savedImage
 
     driver.find_element_by_xpath('//*[@id="react-root"]/section/nav[2]/div/div/div[2]/div/div/div[3]').click()
@@ -247,7 +266,7 @@ def uploadImage():
     driver.find_element_by_xpath('//*[@id="react-root"]/section/div[1]/header/div/div[2]/button').click()
     sl()
 
-    driver.find_element_by_xpath('//*[@id="react-root"]/section/div[2]/section[1]/div[1]/textarea').send_keys(getHashtags(getList(useHashtag)))
+    driver.find_element_by_xpath('//*[@id="react-root"]/section/div[2]/section[1]/div[1]/textarea').send_keys(get_hashtags(get_list(True)))
     sl()
     driver.find_element_by_xpath('//*[@id="react-root"]/section/div[1]/header/div/div[2]/button').click()
     sl()
@@ -256,87 +275,93 @@ def uploadImage():
 
     time.sleep(10 * speed)
 
-def getList(OneHashtag):
-    if (OneHashtag):
-        for x in hashtags.allHashtags:
-            if OneHashtag in x:
+
+def get_list(one_hashtag):
+    if one_hashtag:
+        for x in hashtags.all_hashtags:
+            if one_hashtag in x:
                 return x
     else:
         return False
 
 
 def main():
-    global fullInArrow
-    global useHashtag
-    global savedImage
-    global accountsList
+    accounts_list = list(read_users_data())
+    
+    full_in_arrow = 0
+    use_hashtag = False
+    saved_image = False
+    
+    mobile_emulation = {
+        "userAgent": "Mozilla/5.0 (Linux; Android 8.1.0; CUBOT_POWER) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.89 Mobile Safari/537.36"}
+    
+    chrome_options = Options()
+    
+    chrome_options.add_experimental_option("mobileEmulation", mobile_emulation)
+    
+    driver = webdriver.Chrome(CHROMEDRIVER_PATH, chrome_options=chrome_options)
+    
+    log_print("start")
 
-    myPrint("start")
+    temp_hashtag = get_hashtags(use_hashtag, True)
+    use_hashtag = temp_hashtag
 
-    for x in zip(users, passwords):
-        accountsList.append(account(x[0], x[1]))
-
-
-    tempHashtag = getHashtags(useHashtag, True)
-    useHashtag = tempHashtag
-
-    indexAc = 0
+    index_ac = 0
     while True:
 
-        x = accountsList[indexAc]
+        x = accounts_list[index_ac]
 
+        login(x.user, x.password, driver)
+        log_print("login to " + x.user)
 
-        login(x.user, x.password)
-        myPrint("login to " + x.user)
+        temp_hashtag = get_hashtags(use_hashtag, True)
+        if not saved_image:
+            use_hashtag = temp_hashtag
 
-        tempHashtag = getHashtags(useHashtag, True)
-        if not savedImage:
-            useHashtag = tempHashtag
+        x.pass_hour()
 
-        x.PassHour()
+        full_in_arrow += 1 if search(temp_hashtag, index_ac, accounts_list, driver) == -1 else 0
 
-        fullInArrow += 1 if search(tempHashtag, indexAc) == -1 else 0
-
-        if (x.upload < uploadPerH):
+        if x.upload < upload_per_h:
 
             try:
-                uploadImage()
-                myPrint("upload")
+                upload_image(driver)
+                log_print("upload")
                 x.upload += 1
             except:
                 driver.get('https://www.instagram.com')
-                closePop()
+                close_pop(driver)
                 try:
-                    uploadImage()
-                    myPrint("upload")
+                    upload_image(driver)
+                    log_print("upload")
                     x.upload += 1
                 except:
-                    myPrint("cant upload image")
+                    log_print("cant upload image")
 
+        if full_in_arrow >= len(accounts_list):
+            logout(driver)
 
-        if fullInArrow >= len(accountsList):
-            logout()
+            accounts_list.sort(key=lambda y: y.startTime)
+            index_ac = 0
 
-            accountsList.sort(key=lambda y: y.startTime)
-            indexAc = 0
+            sleep_time = 1 + 60*60 - (time.time() - accounts_list[0].start_time)
 
-            sleepTime = 1 + 60*60 - (time.time() - accountsList[0].startTime)
-
-            if (sleepTime < 0):
-                myPrint("full use sleep time is negative! (" + str(sleepTime) + ")")
+            if sleep_time < 0:
+                log_print("full use sleep time is negative! (" + str(sleep_time) + ")")
                 continue
 
-            myPrint("full use; sleep for " + str(int(sleepTime/60)) + " Minutes")
-            time.sleep(sleepTime)
+            log_print("full use; sleep for " + str(int(sleep_time / 60)) + " Minutes")
+            time.sleep(sleep_time)
 
         else:
-            indexAc = (indexAc + 1) % len(accountsList)
-            logout()
-            myPrint("logout from " + x.user)
+            index_ac = (index_ac + 1) % len(accounts_list)
+            logout(driver)
+            log_print("logout from " + x.user)
 
-        savedImage = False
+        saved_image = False
 
-        #TODO: like my oun image
+        # TODO: like my oun image
+
 
 if __name__ == '__main__':
     main()

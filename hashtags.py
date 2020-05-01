@@ -1,10 +1,5 @@
 
 
-def printHash(str):
-    print(str.split("\n\n"))
-
-
-
 general = ['#photooftheday', '#instagood', '#nofilter', '#tbt', '#igers', '#picoftheday', '#love', '#nature', '#swag', '#lifeisgood', '#caseofthemondays', '#instapic', '#instadaily', '#selfie', '#instamood', '#bestoftheday']
 
 follow = ['#followme', '#likeforlike', '#like4like', '#follow4follow', '#followforfollow', '#f4f']
@@ -19,12 +14,12 @@ pet = ['#puppylove', '#mansbestfriend', '#womansbestfriend', '#catsofinstagram',
 
 tech = ['#techie', '#latesttech', '#ilovemygadgets', '#gadgetsgalore', '#apple', '#android', '#applevsandroid', '#wearabletech', '#VR', '#mobile', '#makinglifeeasier', '#innovation']
 
-weding = ['#ido', '#tyingtheknot', '#shesaidyes', '#heasked', '#fallwedding', '#rusticwedding', '#summerwedding', '#weddingfavors', '#centerpieces', '#sayyestothedress', '#bohowedding', '#weddinghair', '#weddingstyle', '#loveislove']
+wedding = ['#ido', '#tyingtheknot', '#shesaidyes', '#heasked', '#fallwedding', '#rusticwedding', '#summerwedding', '#weddingfavors', '#centerpieces', '#sayyestothedress', '#bohowedding', '#weddinghair', '#weddingstyle', '#loveislove']
 
 life = ['#lookgoodfeelgood', '#feeltheburn', '#nopainnogain', '#workingonabetterme', '#cardio', '#fitfam', '#yogafordays', '#fitlife', '#trainhard', '#noexcuses']
 
-holyday = ['#stockingstuffers', '#christmasdecor', '#spookyhalloween', '#happyhalloween', '#thanksgivingtable', '#turkeyorham', '#valentineformyvalentine', '#happyfourth', '#newyearseve', '#newyearsresolution', '#holidaycrazy', '#holidayspirit', '#kwanza', '#hanukkahgift', '#underthetree']
+holiday = ['#stockingstuffers', '#christmasdecor', '#spookyhalloween', '#happyhalloween', '#thanksgivingtable', '#turkeyorham', '#valentineformyvalentine', '#happyfourth', '#newyearseve', '#newyearsresolution', '#holidaycrazy', '#holidayspirit', '#kwanza', '#hanukkahgift', '#underthetree']
 
-instag = ['#instacontest', '#instagiveaway', '#giveaway', '#sweepstakes', '#contestalert', '#contestentry', '#winit', '#freebie', '#winitwednesday']
+instegram = ['#instacontest', '#instagiveaway', '#giveaway', '#sweepstakes', '#contestalert', '#contestentry', '#winit', '#freebie', '#winitwednesday']
 
-allHashtags = [follow, general, fashion, food, travel, pet, tech, weding, life, holyday, instag]
+all_hashtags = [follow, general, fashion, food, travel, pet, tech, wedding, life, holiday, instegram]
