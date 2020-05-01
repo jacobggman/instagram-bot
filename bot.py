@@ -9,6 +9,8 @@ import cv2
 import datetime
 
 CHROMEDRIVER_PATH = r"C:\Users\User\Desktop\Python\SeleniumScripts\chromedriver.exe"
+SAVE_IMAGE_FOLDER = r"C:/Users/User"
+
 scrollTimes = 1
 time_betwin_act = 4
 breackTime = (60*10, 60*20)  # betwing two secends
@@ -84,7 +86,7 @@ def detect_faces():
     """
     check in downloaded image have a face    
     """
-    image = cv2.imread('C:/Users/User/TAR.png')
+    image = cv2.imread(SAVE_IMAGE_FOLDER + '/TAR.png')
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
     faces = face_cascade.detectMultiScale(
@@ -126,7 +128,7 @@ def sl():
 def save_image(image_xpath, driver):
     global savedImage
     if not savedImage:
-        urlretrieve(driver.find_element_by_xpath(image_xpath).get_attribute("src"), 'C:/Users/User/TAR.png')
+        urlretrieve(driver.find_element_by_xpath(image_xpath).get_attribute("src"), SAVE_IMAGE_FOLDER + '/TAR.png')
         savedImage = True if detect_faces() == 0 else False
 
 
