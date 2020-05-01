@@ -154,7 +154,7 @@ def search(hashtag, index, accounts_list, driver):
 
     # gathering photos
     pic_hrefs = []
-    for i in range(1, scrollTimes):
+    for i in range(0, scrollTimes):
         try:
             driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
             time.sleep(random.uniform(1.5, 3) * speed)
